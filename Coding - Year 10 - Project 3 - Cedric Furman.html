@@ -1,0 +1,2254 @@
+<!-- Cedric Furman -->
+<!-- May–June 2022 -->
+<!-- This is my program for project 3, it follows a Risk format in order to learn about OOP, game design, and AI -->
+
+<!DOCTYPE html>
+ 
+<html>
+
+<head>
+
+  <title>Danger</title>
+  <style>
+
+    /* Center the loader */
+    body {
+      background-color:rgb(181, 221, 252);
+    }
+    
+    #loader {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      z-index: 1;
+      width: 120px;
+      height: 120px;
+      margin: -76px 0 0 -76px;
+      border-left: 16px solid red;
+      border-right: 16px solid green;
+      border-radius: 50%;
+      border-top: 16px solid yellow;
+      -webkit-animation: spin 2s linear infinite;
+      animation: spin 2s linear infinite;
+    }
+
+    @-webkit-keyframes spin {
+      0% { -webkit-transform: rotate(0deg); }
+      100% { -webkit-transform: rotate(360deg); }
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* Add animation to "page content" */
+    .animate-bottom {
+      position: relative;
+      -webkit-animation-name: animatebottom;
+      -webkit-animation-duration: 1s;
+      animation-name: animatebottom;
+      animation-duration: 1s
+    }
+
+    @-webkit-keyframes animatebottom {
+      from { bottom:-100px; opacity:0 } 
+      to { bottom:0px; opacity:1 }
+    }
+
+    @keyframes animatebottom { 
+      from{ bottom:-100px; opacity:0 } 
+      to{ bottom:0; opacity:1 }
+    }
+
+    #myDiv {
+      display: none;
+      text-align: center;
+    }
+
+</style>
+</head>
+<body onload="myFunction()" style = "padding:0;" >
+   <p align="center">
+ 
+     <div id="loader"></div>
+
+     <canvas  style = "display:none;margin:auto;" id="mycanvas"></canvas>
+   </p>
+</body>
+ 
+<script src="https://cdn.jsdelivr.net/processing.js/1.4.8/processing.min.js">
+ 
+</script>
+
+<script>
+
+   var sketchProc = function(processingInstance) {
+      with (processingInstance) {
+        size(1280, 634);
+        frameRate(60);
+  
+  var img = loadImage("map.png");
+
+  var gameState = "menu";
+  var phase = "reinforce";
+  var phaseCounter = 0;
+  var turn = "player";
+  var reinforcements = 3;
+  var selected;
+  var playerFortified = false;
+  var enemyFortified = false;
+  var timer = 0;
+  var playerFortified = false;
+  var enemyFortified = false;
+  var winningArmy = "";
+  var losingArmy = "";
+
+
+  class Province {
+
+
+  constructor(name, shape, xRange, yRange, id) {
+
+    this.name = name;
+    this.shape = shape;
+    this.xRange = xRange;
+    this.yRange = yRange;
+    this.allegiance  = "";
+    this.troops = 1;
+    this.neighbouringProvinces = [];
+    this.identifier = id;
+
+  }
+  checkMousePosition = function(){
+
+      if (this.xRange[1] > mouseX && mouseX > this.xRange[0] && this.yRange[1] > mouseY && mouseY > this.yRange[0]){
+
+          return true;
+
+      }else{
+      return false;
+    }
+
+  }
+
+
+
+
+}
+
+summarizeBattle = function(){
+
+  if (winningArmy.allegiance == "player") {
+
+			display("You won the battle!", 100,700,500,50);
+	
+  }
+  else if (winningArmy.allegiance == "enemy"){
+			display("You lost the battle...", 200,700,500,50);    
+  }
+}
+
+argentina = function(troops){
+
+beginShape();
+vertex(297,442)
+vertex(283,442)
+vertex(283,453)
+vertex(264,453)
+vertex(260,480)
+vertex(264,503)
+vertex(266,537)
+vertex(274,556)
+vertex(279,574)
+vertex(285,583)
+vertex(295,583)
+vertex(297,566)
+vertex(293,553)
+vertex(291,537)
+vertex(297,528)
+vertex(312,524)
+vertex(308,509)
+vertex(323,507)
+vertex(323,499)
+vertex(308,491)
+vertex(316,467)
+vertex(308,457)
+endShape();
+textSize(30);
+text(troops,275,510);
+
+}
+
+chile = function(troops){
+
+beginShape();
+vertex(251,404)
+vertex(264,398)
+vertex(268,409)
+vertex(287,417)
+vertex(293,428)
+vertex(297,442)
+vertex(283,440)
+vertex(281,451)
+vertex(264,455)
+vertex(262,476)
+vertex(264,501)
+vertex(266,539)
+vertex(272,553)
+vertex(276,572)
+vertex(287,583)
+vertex(295,583)
+vertex(312,595)
+vertex(297,598)
+vertex(285,593)
+vertex(272,581)
+vertex(266,564)
+vertex(260,545)
+vertex(256,524)
+vertex(256,491)
+vertex(253,463)
+vertex(249,438)
+vertex(251,421)
+endShape();
+textSize(30);
+text(troops,245,500);
+
+}
+
+peru = function(troops){
+
+beginShape();
+vertex(205,365)
+vertex(205,356)
+vertex(211,348)
+vertex(224,356)
+vertex(235,365)
+vertex(249,367)
+vertex(249,373)
+vertex(239,379)
+vertex(235,388)
+vertex(245,402)
+vertex(251,404)
+vertex(251,434)
+vertex(228,421)
+vertex(205,381)
+endShape();
+textSize(30);
+text(troops,210,400);
+
+}
+
+brazil = function(troops){
+
+beginShape();
+vertex(247,346)
+vertex(253,346)
+vertex(262,350)
+vertex(272,346)
+vertex(270,337)
+vertex(283,331)
+vertex(289,348)
+vertex(302,346)
+vertex(314,344)
+vertex(318,337)
+vertex(323,352)
+vertex(346,365)
+vertex(365,367)
+vertex(381,381)
+vertex(381,394)
+vertex(369,411)
+vertex(367,436)
+vertex(360,455)
+vertex(350,457)
+vertex(335,465)
+vertex(337,480)
+vertex(325,499)
+vertex(308,486)
+vertex(318,472)
+vertex(306,455)
+vertex(300,453)
+vertex(297,430)
+vertex(287,419)
+vertex(268,409)
+vertex(266,400)
+vertex(247,404)
+vertex(235,396)
+vertex(237,379)
+vertex(245,375)
+endShape();
+textSize(30);
+text(troops,305,405);
+
+}
+
+columbia = function(troops){
+
+beginShape();
+vertex(314,344)
+vertex(318,337)
+vertex(308,331)
+vertex(295,329)
+vertex(283,316)
+vertex(274,310)
+vertex(258,310)
+vertex(251,306)
+vertex(235,306)
+vertex(220,321)
+vertex(220,335)
+vertex(214,348)
+vertex(226,356)
+vertex(232,365)
+vertex(247,367)
+vertex(247,348)
+vertex(256,346)
+vertex(260,350)
+vertex(272,346)
+vertex(270,337)
+vertex(283,335)
+vertex(287,348)
+vertex(300,348)
+endShape();
+textSize(30);
+text(troops,250,335);
+
+}
+
+mexico = function(troops){
+
+beginShape();
+vertex(92,216)
+vertex(102,251)
+vertex(96,249)
+vertex(86,211)
+vertex(107,218)
+vertex(125,216)
+vertex(134,228)
+vertex(140,224)
+vertex(146,239)
+vertex(146,258)
+vertex(151,272)
+vertex(165,274)
+vertex(176,262)
+vertex(188,262)
+vertex(182,274)
+vertex(176,276)
+vertex(169,281)
+vertex(163,289)
+vertex(153,283)
+vertex(136,279)
+vertex(119,268)
+vertex(119,253)
+vertex(109,237)
+endShape();
+beginShape();
+vertex(180,285)
+vertex(180,276)
+vertex(172,276)
+vertex(165,291)
+vertex(178,295)
+vertex(186,308)
+vertex(203,323)
+vertex(209,318)
+vertex(218,325)
+vertex(222,321)
+vertex(214,312)
+vertex(203,312)
+vertex(197,306)
+vertex(197,293)
+vertex(190,285)
+endShape();
+beginShape();
+vertex(197,258)
+vertex(209,253)
+vertex(222,260)
+vertex(235,264)
+vertex(224,268)
+vertex(214,262)
+endShape();
+beginShape();
+vertex(239,274)
+vertex(239,270)
+vertex(251,268)
+vertex(253,272)
+vertex(249,276)
+endShape();
+textSize(30);
+text(troops,125,265);
+
+}
+
+america = function(troops){
+
+beginShape();
+vertex(264,155)
+vertex(276,157)
+vertex(281,148)
+vertex(289,148)
+vertex(289,157)
+vertex(274,165)
+vertex(274,169)
+vertex(260,176)
+vertex(245,188)
+vertex(245,197)
+vertex(216,218)
+vertex(220,241)
+vertex(211,243)
+vertex(207,224)
+vertex(188,224)
+vertex(172,222)
+vertex(157,230)
+vertex(153,241)
+vertex(144,235)
+vertex(138,224)
+vertex(121,216)
+vertex(102,214)
+vertex(88,214)
+vertex(79,205)
+vertex(75,180)
+vertex(92,153)
+vertex(102,138)
+vertex(201,140)
+vertex(222,146)
+vertex(235,153)
+vertex(230,165)
+vertex(243,165)
+vertex(253,159)
+endShape();
+beginShape();
+vertex(94,117)
+vertex(104,115)
+vertex(102,96)
+vertex(92,90)
+vertex(132,58)
+vertex(98,52)
+vertex(56,60)
+vertex(35,73)
+vertex(48,75)
+vertex(20,88)
+vertex(23,100)
+vertex(37,104)
+vertex(62,94)
+vertex(79,94)
+vertex(92,104)
+endShape();
+textSize(30);
+text(troops,160,195);
+
+}
+
+canada = function(troops){
+
+beginShape();
+vertex(306,134)
+vertex(302,146)
+vertex(312,151)
+vertex(308,155)
+vertex(293,161)
+vertex(289,146)
+vertex(283,146)
+vertex(276,155)
+vertex(260,157)
+vertex(235,167)
+vertex(235,163)
+vertex(241,153)
+vertex(216,144)
+vertex(201,140)
+vertex(104,138)
+vertex(96,130)
+vertex(98,113)
+vertex(104,104)
+vertex(100,96)
+vertex(92,92)
+vertex(130,56)
+vertex(146,62)
+vertex(169,56)
+vertex(184,54)
+vertex(207,37)
+vertex(239,29)
+vertex(262,25)
+vertex(283,23)
+vertex(302,18)
+vertex(335,14)
+vertex(381,12)
+vertex(346,25)
+vertex(323,39)
+vertex(348,71)
+vertex(327,86)
+vertex(308,75)
+vertex(321,67)
+vertex(310,54)
+vertex(293,65)
+vertex(285,75)
+vertex(270,79)
+vertex(251,79)
+vertex(230,98)
+vertex(253,113)
+vertex(256,132)
+vertex(266,125)
+vertex(268,115)
+vertex(281,109)
+vertex(281,100)
+vertex(291,88)
+vertex(308,88)
+vertex(312,100)
+vertex(325,96)
+vertex(329,111)
+vertex(342,121)
+vertex(335,136)
+vertex(342,146)
+vertex(323,144)
+vertex(323,132)
+endShape();
+textSize(30);
+text(troops,200,110);
+
+}
+
+northernEurope = function(troops){
+
+beginShape();
+vertex(604,119)
+vertex(608,117)
+vertex(616,109)
+vertex(616,94)
+vertex(604,94)
+vertex(593,107)
+vertex(593,115)
+endShape();
+beginShape();
+vertex(616,90)
+vertex(625,83)
+vertex(612,58)
+vertex(610,54)
+vertex(585,54)
+vertex(562,77)
+vertex(543,88)
+vertex(547,102)
+vertex(560,94)
+vertex(566,107)
+vertex(558,107)
+vertex(556,117)
+vertex(562,117)
+vertex(570,113)
+vertex(581,107)
+vertex(585,96)
+vertex(581,88)
+vertex(595,71)
+vertex(604,71)
+vertex(595,81)
+vertex(595,90)
+endShape();
+beginShape();
+vertex(488,73)
+vertex(484,69)
+vertex(463,71)
+vertex(465,77)
+vertex(476,77)
+endShape();
+beginShape();
+vertex(392,92)
+vertex(411,71)
+vertex(428,69)
+vertex(440,60)
+vertex(457,58)
+vertex(472,48)
+vertex(486,20)
+vertex(465,10)
+vertex(434,14)
+vertex(398,16)
+vertex(379,18)
+vertex(369,25)
+vertex(356,25)
+vertex(356,31)
+vertex(379,33)
+vertex(381,50)
+vertex(373,69)
+vertex(377,88)
+endShape();
+textSize(30);
+text(troops,565,100);
+
+}
+
+northWesternEurope = function(troops){
+
+  beginShape();
+  vertex(545,138)
+  vertex(545,134)
+  vertex(551,121)
+  vertex(545,121)
+  vertex(539,132)
+  vertex(541,136)
+  endShape();
+  beginShape();
+  vertex(528,132)
+  vertex(530,125)
+  vertex(518,111)
+  vertex(518,100)
+  vertex(505,104)
+  vertex(509,113)
+  vertex(512,121)
+  vertex(512,128)
+  vertex(509,134)
+  vertex(514,134)
+  vertex(520,132)
+  endShape();
+  beginShape();
+  vertex(507,113)
+  vertex(505,123)
+  vertex(493,130)
+  vertex(493,117)
+  endShape();
+  textSize(30);
+  text(troops,510,130);
+
+}
+
+westernEurope = function(troops){
+
+  beginShape();
+  vertex(516,193)
+  vertex(503,195)
+  vertex(491,193)
+  vertex(495,163)
+  vertex(518,165)
+  vertex(520,153)
+  vertex(509,144)
+  vertex(518,144)
+  vertex(520,138)
+  vertex(528,136)
+  vertex(532,132)
+  vertex(545,138)
+  vertex(549,140)
+  vertex(547,151)
+  vertex(549,163)
+  vertex(535,165)
+  vertex(530,172)
+  vertex(520,184)
+  endShape();
+  textSize(30);
+  text(troops,520,165);
+
+}
+
+southernEurope = function(troops){
+
+  beginShape();
+  vertex(606,195)
+  vertex(610,188)
+  vertex(606,178)
+  vertex(612,174)
+  vertex(606,172)
+  vertex(606,161)
+  vertex(598,151)
+  vertex(587,155)
+  vertex(581,151)
+  vertex(562,151)
+  vertex(547,151)
+  vertex(551,161)
+  vertex(556,161)
+  vertex(564,169)
+  vertex(581,180)
+  vertex(587,176)
+  vertex(574,169)
+  vertex(568,159)
+  vertex(574,163)
+  vertex(587,169)
+  vertex(595,180)
+  endShape();
+  textSize(30);
+  text(troops,585,175);
+
+}
+
+centralEurope = function(troops){
+
+  beginShape();
+  vertex(602,138)
+  vertex(602,142)
+  vertex(598,151)
+  vertex(585,153)
+  vertex(581,151)
+  vertex(572,151)
+  vertex(562,148)
+  vertex(549,151)
+  vertex(547,148)
+  vertex(551,144)
+  vertex(545,138)
+  vertex(547,132)
+  vertex(551,121)
+  vertex(558,117)
+  vertex(570,117)
+  vertex(587,115)
+  vertex(598,115)
+  vertex(602,119)
+  vertex(604,128)
+  endShape();
+  textSize(30);
+  text(troops,565,140);
+
+}
+
+easternEurope = function(troops){
+
+  beginShape();
+  vertex(625,172)
+  vertex(604,174)
+  vertex(604,163)
+  vertex(598,153)
+  vertex(602,144)
+  vertex(608,134)
+  vertex(604,119)
+  vertex(610,119)
+  vertex(616,111)
+  vertex(625,111)
+  vertex(633,119)
+  vertex(637,128)
+  vertex(658,136)
+  vertex(658,148)
+  vertex(644,159)
+  vertex(635,151)
+  vertex(627,153)
+  vertex(625,163)
+  endShape();
+  textSize(30);
+  text(troops,615,150);
+
+}
+
+northAfrica = function(troops){
+
+  beginShape();
+  vertex(616,268)
+  vertex(614,216)
+  vertex(598,211)
+  vertex(595,220)
+  vertex(577,214)
+  vertex(566,211)
+  vertex(562,205)
+  vertex(562,193)
+  vertex(526,195)
+  vertex(512,201)
+  vertex(503,197)
+  vertex(488,211)
+  vertex(484,222)
+  vertex(472,232)
+  vertex(491,235)
+  vertex(514,253)
+  vertex(535,272)
+  vertex(566,251)
+  vertex(583,251)
+  endShape();
+  textSize(30);
+  text(troops,540,250);
+
+}
+
+mali = function(troops){
+
+beginShape();
+vertex(528,302)
+vertex(509,308)
+vertex(491,310)
+vertex(486,302)
+vertex(478,302)
+vertex(472,291)
+vertex(459,281)
+vertex(455,260)
+vertex(474,235)
+vertex(488,235)
+vertex(518,256)
+vertex(537,272)
+vertex(537,285)
+vertex(522,289)
+endShape();
+textSize(30);
+text(troops,480,280);
+
+}
+
+westAfrica = function(troops){
+
+  beginShape();
+  vertex(509,333)
+  vertex(509,312)
+  vertex(491,310)
+  vertex(486,302)
+  vertex(476,300)
+  vertex(474,291)
+  vertex(459,283)
+  vertex(455,302)
+  vertex(470,321)
+  vertex(488,335)
+  endShape();
+  textSize(30);
+  text(troops,490,335);
+
+}
+
+chad = function(troops){
+
+  beginShape();
+  vertex(541,295)
+  vertex(535,304)
+  vertex(522,291)
+  vertex(535,287)
+  vertex(539,272)
+  vertex(566,251)
+  vertex(579,253)
+  vertex(612,268)
+  vertex(614,287)
+  vertex(606,297)
+  vertex(604,310)
+  vertex(595,318)
+  vertex(581,323)
+  vertex(577,312)
+  vertex(579,310)
+  vertex(572,293)
+  vertex(556,297)
+  endShape();
+  textSize(30);
+  text(troops,585,295);
+
+}
+
+nigeria = function(troops){
+
+  beginShape();
+  vertex(625,331)
+  vertex(610,306)
+  vertex(583,323)
+  vertex(574,295)
+  vertex(553,297)
+  vertex(539,295)
+  vertex(532,302)
+  vertex(509,306)
+  vertex(509,331)
+  vertex(524,329)
+  vertex(532,327)
+  vertex(543,335)
+  vertex(553,335)
+  vertex(558,346)
+  vertex(583,346)
+  vertex(595,333)
+  vertex(610,335)
+  endShape();
+  textSize(30);
+  text(troops,540,330);
+
+}
+
+congo = function(troops){
+
+  beginShape();
+  vertex(564,430)
+  vertex(614,436)
+  vertex(637,423)
+  vertex(646,417)
+  vertex(650,398)
+  vertex(637,392)
+  vertex(635,360)
+  vertex(640,339)
+  vertex(627,333)
+  vertex(604,335)
+  vertex(591,337)
+  vertex(583,346)
+  vertex(560,346)
+  vertex(556,363)
+  vertex(568,377)
+  vertex(574,407)
+  endShape();
+  textSize(30);
+  text(troops,590,380);
+
+}
+
+southAfrica = function(troops){
+
+  beginShape();
+  vertex(635,423)
+  vertex(648,430)
+  vertex(646,444)
+  vertex(640,455)
+  vertex(644,474)
+  vertex(633,493)
+  vertex(621,503)
+  vertex(593,507)
+  vertex(591,499)
+  vertex(583,482)
+  vertex(577,457)
+  vertex(566,432)
+  vertex(606,436)
+  vertex(623,436)
+  endShape();
+  textSize(30);
+  text(troops,605,495);
+
+}
+
+southEastAfrica = function(troops){
+
+  beginShape();
+  vertex(635,360)
+  vertex(652,358)
+  vertex(673,375)
+  vertex(677,400)
+  vertex(677,423)
+  vertex(654,442)
+  vertex(656,461)
+  vertex(646,474)
+  vertex(640,455)
+  vertex(650,440)
+  vertex(646,428)
+  vertex(637,425)
+  vertex(646,415)
+  vertex(650,398)
+  vertex(637,392)
+  vertex(633,377)
+  endShape();
+  beginShape();
+  vertex(713,409)
+  vertex(715,415)
+  vertex(707,444)
+  vertex(700,463)
+  vertex(694,470)
+  vertex(688,463)
+  vertex(688,451)
+  vertex(692,444)
+  vertex(692,428)
+  vertex(702,421)
+  endShape();
+  textSize(30);
+  text(troops,655,430);
+
+}
+
+hornOfAfrica = function(troops){
+
+  beginShape();
+  vertex(669,276)
+  vertex(663,287)
+  vertex(658,302)
+  vertex(650,321)
+  vertex(658,333)
+  vertex(640,335)
+  vertex(640,348)
+  vertex(635,363)
+  vertex(650,358)
+  vertex(671,375)
+  vertex(681,360)
+  vertex(702,344)
+  vertex(719,310)
+  vertex(719,306)
+  vertex(694,310)
+  vertex(679,291)
+  endShape();
+  textSize(30);
+  text(troops,665,335);
+
+}
+
+egypt = function(troops){
+
+  beginShape();
+  vertex(644,226)
+  vertex(650,232)
+  vertex(652,218)
+  vertex(633,216)
+  vertex(616,218)
+  vertex(616,264)
+  vertex(612,285)
+  vertex(608,300)
+  vertex(614,316)
+  vertex(633,337)
+  vertex(658,333)
+  vertex(648,321)
+  vertex(663,295)
+  vertex(663,283)
+  vertex(667,279)
+  vertex(663,264)
+  vertex(656,253)
+  vertex(652,243)
+  endShape();
+  textSize(30);
+  text(troops,630,300);
+
+}
+
+asiaMinor = function(troops){
+
+beginShape();
+vertex(700,184)
+vertex(686,184)
+vertex(688,193)
+vertex(673,193)
+vertex(656,195)
+vertex(644,195)
+vertex(631,195)
+vertex(619,180)
+vertex(619,174)
+vertex(623,172)
+vertex(631,176)
+vertex(642,169)
+vertex(658,176)
+vertex(673,174)
+vertex(667,165)
+vertex(679,165)
+vertex(692,174)
+vertex(698,174)
+endShape();
+textSize(30);
+text(troops,650,195);
+
+}
+
+middleEast = function(troops){
+
+  beginShape();
+  vertex(702,228)
+  vertex(700,224)
+  vertex(700,214)
+  vertex(690,205)
+  vertex(694,201)
+  vertex(686,193)
+  vertex(658,195)
+  vertex(648,218)
+  vertex(654,226)
+  vertex(663,222)
+  vertex(660,216)
+  vertex(669,214)
+  vertex(684,222)
+  endShape();
+  textSize(30);
+  text(troops,670,215);
+
+}
+
+arabia = function(troops){
+
+  beginShape();
+  vertex(663,216)
+  vertex(665,220)
+  vertex(654,226)
+  vertex(669,251)
+  vertex(686,281)
+  vertex(690,300)
+  vertex(721,287)
+  vertex(742,272)
+  vertex(749,258)
+  vertex(734,243)
+  vertex(728,247)
+  vertex(719,247)
+  vertex(709,237)
+  vertex(700,226)
+  vertex(690,226)
+  vertex(671,211)
+  endShape();
+  textSize(30);
+  text(troops,695,270);
+
+}
+
+iran = function(troops){
+
+  beginShape();
+  vertex(684,180)
+  vertex(696,182)
+  vertex(705,193)
+  vertex(721,193)
+  vertex(728,188)
+  vertex(736,188)
+  vertex(749,197)
+  vertex(749,216)
+  vertex(753,228)
+  vertex(757,235)
+  vertex(755,245)
+  vertex(738,241)
+  vertex(723,235)
+  vertex(709,222)
+  vertex(705,222)
+  vertex(700,214)
+  vertex(692,207)
+  vertex(692,197)
+  vertex(681,190)
+  endShape();
+  textSize(30);
+  text(troops,715,225);
+
+}
+
+pakistan = function(troops){
+
+  beginShape();
+  vertex(780,251)
+  vertex(793,247)
+  vertex(784,232)
+  vertex(791,232)
+  vertex(803,214)
+  vertex(795,203)
+  vertex(803,199)
+  vertex(795,190)
+  vertex(784,190)
+  vertex(782,188)
+  vertex(768,190)
+  vertex(753,199)
+  vertex(749,197)
+  vertex(749,214)
+  vertex(749,224)
+  vertex(759,235)
+  vertex(757,245)
+  vertex(776,241)
+  endShape();
+  textSize(30);
+  text(troops,770,240);
+
+}
+
+centralAsia = function(troops){
+
+  beginShape();
+  vertex(694,151)
+  vertex(686,142)
+  vertex(684,136)
+  vertex(692,132)
+  vertex(700,128)
+  vertex(709,132)
+  vertex(732,132)
+  vertex(728,119)
+  vertex(753,113)
+  vertex(768,119)
+  vertex(776,117)
+  vertex(795,132)
+  vertex(807,132)
+  vertex(822,138)
+  vertex(807,159)
+  vertex(807,169)
+  vertex(791,178)
+  vertex(793,190)
+  vertex(782,188)
+  vertex(768,193)
+  vertex(763,190)
+  vertex(753,199)
+  vertex(740,190)
+  vertex(721,190)
+  vertex(713,176)
+  vertex(711,169)
+  vertex(705,161)
+  vertex(713,157)
+  vertex(709,148)
+  vertex(698,148)
+  endShape();
+  textSize(30);
+  text(troops,760,170);
+
+}
+
+russia = function(troops){
+
+  beginShape();
+  vertex(616,56)
+  vertex(621,81)
+  vertex(621,94)
+  vertex(616,98)
+  vertex(616,109)
+  vertex(625,113)
+  vertex(629,125)
+  vertex(640,128)
+  vertex(646,134)
+  vertex(660,138)
+  vertex(658,151)
+  vertex(654,155)
+  vertex(669,165)
+  vertex(681,167)
+  vertex(698,174)
+  vertex(688,159)
+  vertex(694,148)
+  vertex(684,140)
+  vertex(694,130)
+  vertex(732,132)
+  vertex(728,119)
+  vertex(753,113)
+  vertex(778,117)
+  vertex(795,132)
+  vertex(807,132)
+  vertex(826,138)
+  vertex(839,132)
+  vertex(858,134)
+  vertex(858,128)
+  vertex(877,134)
+  vertex(887,134)
+  vertex(902,138)
+  vertex(919,136)
+  vertex(929,138)
+  vertex(927,123)
+  vertex(944,123)
+  vertex(958,136)
+  vertex(977,144)
+  vertex(986,142)
+  vertex(992,153)
+  vertex(984,157)
+  vertex(986,165)
+  vertex(998,163)
+  vertex(1007,144)
+  vertex(996,125)
+  vertex(1013,142)
+  vertex(1017,138)
+  vertex(1000,121)
+  vertex(984,119)
+  vertex(969,115)
+  vertex(975,96)
+  vertex(1011,94)
+  vertex(1011,88)
+  vertex(1030,86)
+  vertex(1030,107)
+  vertex(1051,130)
+  vertex(1053,111)
+  vertex(1040,96)
+  vertex(1057,94)
+  vertex(1072,83)
+  vertex(1059,75)
+  vertex(1084,75)
+  vertex(1078,67)
+  vertex(1057,62)
+  vertex(1019,56)
+  vertex(975,52)
+  vertex(929,48)
+  vertex(896,52)
+  vertex(879,46)
+  vertex(828,41)
+  vertex(818,31)
+  vertex(780,37)
+  vertex(738,48)
+  vertex(717,46)
+  vertex(728,62)
+  vertex(705,58)
+  vertex(675,65)
+  vertex(642,79)
+  vertex(627,67)
+  vertex(644,67)
+  vertex(648,62)
+  vertex(635,58)
+  endShape();
+  textSize(30);
+  text(troops,815,110);
+
+}
+
+india = function(troops){
+
+  beginShape();
+  vertex(875,260)
+  vertex(889,232)
+  vertex(879,224)
+  vertex(864,232)
+  vertex(843,230)
+  vertex(828,220)
+  vertex(816,216)
+  vertex(818,199)
+  vertex(797,203)
+  vertex(799,214)
+  vertex(791,230)
+  vertex(786,232)
+  vertex(788,245)
+  vertex(782,251)
+  vertex(793,262)
+  vertex(801,258)
+  vertex(803,279)
+  vertex(818,316)
+  vertex(828,310)
+  vertex(833,327)
+  vertex(841,323)
+  vertex(833,310)
+  vertex(830,287)
+  vertex(854,266)
+  endShape();
+  textSize(30);
+  text(troops,820,270);
+
+}
+
+mongolia = function(troops){
+
+  beginShape();
+  vertex(940,148)
+  vertex(933,144)
+  vertex(921,144)
+  vertex(921,134)
+  vertex(900,138)
+  vertex(883,134)
+  vertex(872,136)
+  vertex(870,130)
+  vertex(856,125)
+  vertex(856,134)
+  vertex(837,134)
+  vertex(820,140)
+  vertex(841,151)
+  vertex(856,159)
+  vertex(864,167)
+  vertex(879,167)
+  vertex(898,172)
+  vertex(914,167)
+  vertex(923,157)
+  endShape();
+  textSize(30);
+  text(troops,875,165);
+
+}
+
+southEastAsia = function(troops){
+
+  beginShape();
+  vertex(919,329)
+  vertex(914,329)
+  vertex(902,316)
+  vertex(900,289)
+  vertex(896,281)
+  vertex(887,285)
+  vertex(881,268)
+  vertex(875,260)
+  vertex(889,230)
+  vertex(898,237)
+  vertex(893,249)
+  vertex(904,260)
+  vertex(923,251)
+  vertex(933,260)
+  vertex(927,270)
+  vertex(942,289)
+  vertex(946,304)
+  vertex(929,318)
+  vertex(921,302)
+  vertex(910,297)
+  vertex(908,316)
+  endShape();
+  textSize(30);
+  text(troops,900,300);
+
+}
+
+china = function(troops){
+
+  beginShape();
+  vertex(908,262)
+  vertex(923,253)
+  vertex(933,260)
+  vertex(946,262)
+  vertex(965,253)
+  vertex(973,239)
+  vertex(977,222)
+  vertex(965,205)
+  vertex(963,197)
+  vertex(971,190)
+  vertex(954,188)
+  vertex(950,184)
+  vertex(958,174)
+  vertex(965,182)
+  vertex(988,165)
+  vertex(984,161)
+  vertex(988,155)
+  vertex(986,144)
+  vertex(977,146)
+  vertex(963,136)
+  vertex(942,121)
+  vertex(925,121)
+  vertex(927,136)
+  vertex(921,136)
+  vertex(937,148)
+  vertex(916,159)
+  vertex(900,172)
+  vertex(868,167)
+  vertex(843,155)
+  vertex(824,140)
+  vertex(807,159)
+  vertex(809,169)
+  vertex(791,180)
+  vertex(803,199)
+  vertex(818,199)
+  vertex(816,216)
+  vertex(854,232)
+  vertex(881,226)
+  vertex(896,237)
+  vertex(893,249)
+  endShape();
+  beginShape();
+  vertex(984,243)
+  vertex(979,251)
+  vertex(984,258)
+  vertex(986,249)
+  endShape();
+  textSize(30);
+  text(troops,890,220);
+
+}
+
+korea = function(troops){
+
+  beginShape();
+  vertex(990,203)
+  vertex(984,188)
+  vertex(979,186)
+  vertex(973,180)
+  vertex(988,165)
+  vertex(988,180)
+  vertex(996,199)
+  endShape();
+  textSize(30);
+  text(troops,980,200);
+
+}
+
+japan = function(troops){
+  beginShape();
+  vertex(1021,157)
+  vertex(1021,165)
+  vertex(1026,176)
+  vertex(1028,188)
+  vertex(1024,193)
+  vertex(1011,199)
+  vertex(1003,207)
+  vertex(1011,220)
+  vertex(1013,207)
+  vertex(1024,205)
+  vertex(1038,197)
+  vertex(1034,180)
+  vertex(1032,172)
+  vertex(1040,165)
+  endShape();
+  textSize(30);
+  text(troops,1022,200);
+}
+
+phillipines = function(troops){
+  beginShape();
+  vertex(982,274)
+  vertex(990,274)
+  vertex(1000,291)
+  vertex(1015,321)
+  vertex(1009,329)
+  vertex(990,300)
+  endShape();
+  textSize(30);
+  text(troops,980,290);
+}
+
+indonesia = function(troops){
+    beginShape();
+    vertex(1032,356)
+    vertex(1044,358)
+    vertex(1049,371)
+    vertex(1059,360)
+    vertex(1089,375)
+    vertex(1107,398)
+    vertex(1095,400)
+    vertex(1084,388)
+    vertex(1076,396)
+    vertex(1061,390)
+    vertex(1057,377)
+    endShape();
+    beginShape();
+    vertex(990,381)
+    vertex(990,369)
+    vertex(998,381)
+    vertex(998,360)
+    vertex(994,360)
+    vertex(994,354)
+    vertex(1005,350)
+    vertex(990,350)
+    vertex(982,367)
+    endShape();
+    beginShape();
+    vertex(965,394)
+    vertex(956,386)
+    vertex(935,384)
+    vertex(935,386)
+    endShape();
+    beginShape();
+    vertex(971,371)
+    vertex(984,350)
+    vertex(984,333)
+    vertex(977,325)
+    vertex(948,348)
+    vertex(952,369)
+    endShape();
+    beginShape();
+    vertex(933,381)
+    vertex(933,367)
+    vertex(919,350)
+    vertex(893,331)
+    vertex(906,348)
+    vertex(914,367)
+    endShape();
+    beginShape();
+    vertex(910,327)
+    vertex(923,331)
+    vertex(929,350)
+    vertex(916,346)
+    endShape();
+    textSize(30);
+    text(troops,955,365);
+}
+
+australia = function(troops){
+    beginShape();
+    vertex(956,512)
+    vertex(950,507)
+    vertex(952,501)
+    vertex(954,457)
+    vertex(988,444)
+    vertex(998,430)
+    vertex(1013,417)
+    vertex(1015,419)
+    vertex(1024,421)
+    vertex(1032,407)
+    vertex(1049,409)
+    vertex(1044,423)
+    vertex(1063,436)
+    vertex(1074,402)
+    vertex(1082,421)
+    vertex(1084,440)
+    vertex(1101,467)
+    vertex(1097,488)
+    vertex(1070,520)
+    vertex(1053,541)
+    vertex(1044,545)
+    vertex(1042,528)
+    vertex(1034,520)
+    vertex(1024,507)
+    vertex(1019,499)
+    vertex(1003,495)
+    vertex(977,505)
+    endShape();
+    beginShape();
+    vertex(1172,522)
+    vertex(1170,522)
+    vertex(1162,509)
+    vertex(1160,522)
+    vertex(1105,556)
+    vertex(1107,562)
+    vertex(1160,532)
+    endShape();
+    textSize(30);
+    text(troops,1025,480);
+}
+
+reinforce = function(province){
+  if(province.troops < 3 && reinforcements > 0){
+    province.troops++;
+    reinforcements--;
+  }
+}
+
+// rolls dice (1 to 6)
+var diceRoll = function(){
+
+    var number = Math.floor(Math.random() * 6)+1;
+    return number;
+
+}
+
+getIndex = function(array,item){
+  for(var i = 0; i < array.length; i++){
+    if(array[i] == item){
+      return i;
+      break;
+    }
+  }
+  return 0;
+}
+
+// attack function
+attack = function(attacker, attacked){
+
+  console.log(attacker.name +", "+ attacker.identifier + " attacks " + attacked.name + ", " + attacked.identifier + ".");
+
+  console.log("defending with "+attacked.troops);
+
+    var attackerRolls = [];
+    var attackedRolls = [];
+   
+    for(var i = 0; i < attacker.troops - 1; i++){
+
+        attackerRolls.push(diceRoll());
+        console.log("Attacker rolls: " + attackerRolls);
+
+    }
+
+    for(var i = 0; i < attacked.troops; i++){
+
+        attackedRolls.push(diceRoll());
+        console.log("Defender rolls: " + attackedRolls);
+    }
+    var highestDefense = 0;
+    var highestAttack = 0;
+
+    for(var i = 0; i < attackerRolls.length; i++){
+        var currentAttack =  attackerRolls[i]; 
+        if (currentAttack > highestAttack){
+
+            highestAttack = currentAttack;
+
+        }
+
+    }
+
+    for(var i = 0; i < attackedRolls.length; i++){
+        
+        var currentDefense =  attackedRolls[i]; 
+
+        if (currentDefense > highestDefense){
+
+            highestDefense = currentDefense;
+
+        }
+
+    }
+
+    
+
+    if (highestAttack > highestDefense && attacked.allegiance == "player"){
+
+      winningArmy = attacker;
+    	losingArmy = attacked; 
+
+        var i = attacked.identifier;
+        
+        var x = getIndex(player,i);
+
+        player.splice(x,1); 
+        
+        enemy.push(i);
+
+        attacked.troops = attacker.troops - 1;
+        attacker.troops = 1;
+
+        if(enemy.length > 39){
+          selected = null;
+          gameState = "lose";
+        }
+
+    }
+
+    else if (highestAttack > highestDefense && attacked.allegiance == "enemy"){
+         
+    	winningArmy = attacker;
+    	losingArmy = attacked; 
+        
+        var i = attacked.identifier;
+        
+        var x = getIndex(enemy,i);
+
+        enemy.splice(x,1); 
+        
+        player.push(i);
+
+        attacked.troops = attacker.troops - 1;
+        attacker.troops=1;
+
+        if(player.length > 39){
+          selected = null;
+          gameState = "win";
+        }
+
+       }
+
+    if (highestDefense >= highestAttack){
+
+      winningArmy = attacked;
+    	losingArmy = attacker; 
+
+        console.log("defender wins");
+        attacker.troops -= 1;
+
+    }
+
+
+
+}
+
+
+button = function(info, x, y, width, height){
+  if(mouseX > x && mouseX < x + width && mouseY > y && mouseY < y + height){
+    fill(253,167,64);
+  }
+  else{
+    fill(227,157,54);
+  }
+  rect(x,y,width,height);
+  stroke(0);
+  noFill();
+  rect(x+5,y+5,width-10,height-10);
+  noStroke();
+  fill(0);
+  text(info.toUpperCase(),x+width/7,y+height/1.4);
+}
+
+display = function(info, x, y, width, height){
+  
+  fill(227,157,54);
+  rect(x,y,width,height);
+  stroke(0);
+  noFill();
+  rect(x+5,y+5,width-10,height-10);
+  noStroke();
+  fill(0);
+  text(info.toUpperCase(),x+width/7,y+(height/1.4));
+}
+
+fullTroops = function(person){
+  for(var i = 0; i < person.length; i++){
+    if(person[i].troops != 3){
+      return false;
+      break;
+    }
+  }
+  return true;
+}
+
+var Australia = new Province("Australia",australia,[950,1170],[410,560],1);
+
+var Indonesia = new Province("Indonesia",indonesia,[892,1107],[324,400],2);
+
+var Phillipines = new Province("Phillipines",phillipines,[985,1015],[275,330],3);
+
+var Japan = new Province("Japan",japan,[1000,1040],[155,215],4);
+
+var Korea = new Province("Korea",korea,[970,1000],[165,200],5);
+
+var China = new Province("China",china,[790,990],[120,260],6);
+
+var SouthEastAsia = new Province("South-East Asia",southEastAsia,[875,945],[250,330],7);
+
+var Mongolia = new Province("Mongolia",mongolia,[825,940],[125,170],8);
+
+var India = new Province("India",india,[780,890],[200,330],9);
+
+var Russia = new Province("Russia",russia,[620,1090],[30,170],10);
+
+var CentralAsia = new Province("CentralAsia",centralAsia,[685,825],[115,190],11);
+
+var Pakistan = new Province("Pakistan",pakistan,[750,810],[185,250],12);
+
+var Iran = new Province("Iran",iran,[685,760],[180,245],13);
+
+var Arabia = new Province("Arabia",arabia,[655,750],[215,300],14);
+
+var MiddleEast = new Province("Middle East",middleEast,[650,700],[190,225],15);
+
+var AsiaMinor = new Province("Asia Minor",asiaMinor,[620,705],[165,190],16);
+
+var Egypt = new Province("Egypt",egypt,[610,670],[220,340],17);
+
+var HornOfAfrica = new Province("Horn of Africa",hornOfAfrica,[640,720],[280,375],18);
+
+var SouthEastAfrica = new Province("South-East Africa",southEastAfrica,[640,715],[360,475],19);
+
+var SouthAfrica = new Province("South Africa",southAfrica,[565,655],[435,510],20);
+
+var Congo = new Province("Congo",congo,[555,635],[335,435],21);
+
+var Nigeria = new Province("Nigeria",nigeria,[510,630],[295,345],22);
+
+var Chad = new Province("Chad",chad,[520,615],[250,320],23);
+
+var WestAfrica = new Province("West Africa",westAfrica,[460,510],[280,340],24);
+
+var Mali = new Province("Mali",mali,[460,540],[235,310],25);
+
+var NorthAfrica = new Province("North Africa",northAfrica,[475,615],[190,270],26);
+
+var EasternEurope = new Province("Eastern Europe",easternEurope,[600,660],[110,170],27);
+
+var CentralEurope = new Province("Central Europe",centralEurope,[545,610],[115,150],28);
+
+var SouthernEurope = new Province("Southern Europe",southernEurope,[550,620],[150,190],29);
+
+var WesternEurope = new Province("Western Europe",westernEurope,[495,555],[130,195],30);
+
+var NorthWesternEurope = new Province("North Western Europe",northWesternEurope,[495,550],[100,140],31);
+
+var NorthernEurope = new Province("Northern Europe",northernEurope,[545,625],[50,115],32);
+
+var Canada = new Province("Canada",canada,[90,345],[10,170],33);
+
+var America = new Province("America",america,[80,290],[140,240],34);
+
+var Mexico = new Province("Mexico",mexico,[90,220],[210,320],35);
+
+var Columbia = new Province("Columbia",columbia,[220,320],[300,370],36);
+
+var Brazil = new Province("Brazil",brazil,[235,385],[335,500],37);
+
+var Peru = new Province("Peru",peru,[205,255],[350,440],38);
+
+var Chile = new Province("Chile",chile,[255,265],[400,600],39);
+
+var Argentina = new Province("Argentina",argentina,[260,325],[440,590],40);
+
+var allProvinces = [Australia, Indonesia, Phillipines, Japan, Korea, China, SouthEastAsia, Mongolia, India, Russia, CentralAsia, Pakistan, Iran, Arabia, MiddleEast, AsiaMinor, Egypt, HornOfAfrica, SouthEastAfrica, SouthAfrica, Congo, Nigeria, Chad, WestAfrica, Mali, NorthAfrica, EasternEurope, CentralEurope, SouthernEurope, WesternEurope, NorthWesternEurope, NorthernEurope, Canada, America, Mexico, Columbia, Brazil, Peru, Chile, Argentina];
+
+
+// the neighbouring provinces of each province
+Australia.neighbouringProvinces = [Indonesia];
+
+Indonesia.neighbouringProvinces = [Phillipines, SouthEastAsia];
+
+Phillipines.neighbouringProvinces = [Indonesia, SouthEastAsia, China];
+
+Japan.neighbouringProvinces = [China, Korea, Russia];
+
+Korea.neighbouringProvinces = [China, Japan, Russia];
+
+China.neighbouringProvinces = [Japan, Korea, Mongolia, Russia, CentralAsia, Pakistan, India, SouthEastAsia, Phillipines]
+
+SouthEastAsia.neighbouringProvinces = [Indonesia, Phillipines, China, India]
+
+Mongolia.neighbouringProvinces = [China, Russia];
+
+India.neighbouringProvinces = [China, Pakistan, SouthEastAsia];
+
+Russia.neighbouringProvinces = [Japan, Korea, China, Mongolia, CentralAsia, AsiaMinor, Iran, NorthernEurope, EasternEurope];
+
+CentralAsia.neighbouringProvinces = [China, Iran, Pakistan, Russia, AsiaMinor];
+
+Pakistan.neighbouringProvinces = [India, China, CentralAsia, Iran, Arabia];
+
+Iran.neighbouringProvinces = [Pakistan, CentralAsia, Russia, MiddleEast, AsiaMinor, Arabia];
+
+Arabia.neighbouringProvinces = [MiddleEast, Iran, Pakistan, Egypt, HornOfAfrica];
+
+MiddleEast.neighbouringProvinces = [AsiaMinor, Egypt, Arabia, Iran];
+
+AsiaMinor.neighbouringProvinces = [EasternEurope, SouthernEurope, Russia, CentralAsia, Russia, MiddleEast, Iran];
+
+Egypt.neighbouringProvinces = [HornOfAfrica, Arabia, MiddleEast, NorthAfrica, Chad];
+
+HornOfAfrica.neighbouringProvinces = [Egypt, Arabia, SouthEastAfrica, Congo];
+
+SouthEastAfrica.neighbouringProvinces = [HornOfAfrica, Congo, SouthAfrica]
+
+SouthAfrica.neighbouringProvinces = [SouthEastAfrica, Congo]
+
+Congo.neighbouringProvinces = [SouthAfrica, SouthEastAfrica, HornOfAfrica, Nigeria, Egypt];
+
+Nigeria.neighbouringProvinces = [Mali, WestAfrica, Congo, Chad, Egypt];
+
+Chad.neighbouringProvinces = [Nigeria, Egypt, NorthAfrica, Mali];
+
+WestAfrica.neighbouringProvinces = [Mali, Nigeria];
+
+Mali.neighbouringProvinces = [NorthAfrica, Chad, Nigeria, WestAfrica];
+
+NorthAfrica.neighbouringProvinces = [Egypt, WesternEurope, SouthernEurope, Chad, Mali];
+
+EasternEurope.neighbouringProvinces = [Russia, NorthernEurope, CentralEurope, SouthernEurope, AsiaMinor];
+
+CentralEurope.neighbouringProvinces = [EasternEurope, NorthernEurope, NorthWesternEurope, SouthernEurope, WesternEurope];
+
+SouthernEurope.neighbouringProvinces = [NorthAfrica, WestAfrica, AsiaMinor, EasternEurope, CentralEurope, EasternEurope];
+
+WesternEurope.neighbouringProvinces = [northWesternEurope, NorthAfrica, CentralEurope, SouthernEurope]
+
+NorthWesternEurope.neighbouringProvinces = [NorthernEurope, CentralEurope, WesternEurope];
+
+NorthernEurope.neighbouringProvinces = [Russia, EasternEurope, CentralEurope, NorthWesternEurope, Canada]
+
+Canada.neighbouringProvinces = [America, NorthernEurope]
+
+America.neighbouringProvinces = [Mexico, Canada];
+
+Mexico.neighbouringProvinces = [America, Columbia];
+
+Columbia.neighbouringProvinces = [Brazil, Peru, Mexico];
+
+Brazil.neighbouringProvinces = [Peru, Columbia, Chile, Argentina];
+
+Peru.neighbouringProvinces = [Columbia, Brazil, Chile];
+
+Chile.neighbouringProvinces = [Argentina, Brazil, Peru];
+
+Argentina.neighbouringProvinces = [Chile, Brazil];
+
+provinces = function(x,a){
+  
+  for(var i = 0; i < allProvinces.length; i++){
+    
+    var p = allProvinces[i];
+    if(x == p.identifier){
+      if(a == "player"){
+        fill(0,255,0,60);
+      }
+      else if(a == "enemy"){
+        fill(255,0,0,60);
+      }
+      else{
+        noFill();
+      }
+      p.shape(p.troops);
+      p.allegiance = a;
+
+    }
+  }
+}
+
+//dealing the cards
+var deck = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40];
+var player = [];
+var enemy = [];
+deck.sort( () => .5 - Math.random() );
+for(var i = 0; i < 20;i++){
+  enemy.push(deck[(deck.length-1)]);
+  deck.pop();
+}
+player = deck;
+deck = [];
+console.log(player);
+
+test = function(){
+  if(pmouseX != mouseX || pmouseY != mouseY){
+    console.log(Math.round(mouseX) + ", " + Math.round(mouseY))
+  }
+}
+
+draw = function() {
+
+  timer++;
+  
+  if(phase != "reinforce"){
+    reinforcements = 0;
+  }
+
+ //enemy ai//
+  if(turn == "enemy"){
+    if(phase == "reinforce"){
+      for(var i = 0; i < enemy.length; i++){
+        console.log(enemy)
+        var p = allProvinces[(enemy[i]-1)];
+        if(timer > 50 && p.troops < 3){
+         var s = p.neighbouringProvinces;
+         for(var i = 0; i < s.length; i++){
+          if(s[i].allegiance == "player"){
+            reinforce(p);             
+          }
+          reinforce(p);
+          timer = 0;
+        }
+      }
+      }
+      if(reinforcements == 0 || fullTroops(enemy)){
+        phaseCounter = 2;
+        phase = "attack";
+        selected = null;
+      }
+    }
+    else if(phase == "attack"){
+      selected = null;
+      for(var j = 0; j < enemy.length; j++){
+        console.log(enemy)
+        var p = allProvinces[(enemy[j]-1)];
+        console.log(p)
+        var s = p.neighbouringProvinces;
+        for(var i = 0; i < s.length; i++){
+          if(s[i].allegiance == "player" && p.troops > 1){
+
+            attack(p, s[i]);
+            timer = 0;
+          }
+        }
+      }
+
+      phaseCounter = 3;
+      phase = "move";
+    }
+    else if(phase == "move"){
+      phaseCounter = 1;
+      phase = "reinforce";
+      turn = "player";
+      reinforcements = Math.floor((player.length)/3);
+      selected = null;
+    }
+  }
+  
+
+  if(gameState == "menu"){
+    //background
+    noStroke();
+    background(255,255,255);
+    image(img, 0, 0)
+
+    //title
+    textSize(50);
+    display("    danger",410,100,460,100)
+    textSize(18);
+    display("game of world domination",440,507,400,36)
+
+
+    //play button
+    textSize(20);
+    button("   play", 580,395,120,40)
+
+  }
+
+
+
+    //showing mouse coordinates
+    test();
+
+    //if the mouse is clicked
+    mouseClicked = function(){
+      //play button 
+      if(gameState == "menu" && mouseX >= 580 && mouseX <= 700 && mouseY >= 395 && mouseY <= 435){
+        gameState = "play";
+        console.log("Starting")
+      }
+      if(gameState == "play"){
+      //move
+      if(phase == "move" && selected != null ){
+        for(var i = 0; i < selected.neighbouringProvinces.length; i++){
+          var s = selected.neighbouringProvinces[i];
+          if(s.checkMousePosition() && selected.troops > 1 && s.troops < 3 && s.allegiance == "player"){
+
+            if(s.troops < 2){
+              s.troops += selected.troops-1;
+              selected.troops = 1;
+            }
+            else{
+              selected.troops--;
+              s.troops++;
+            }
+
+            phaseCounter++;
+            if(phaseCounter > 3){
+              phaseCounter = 1;
+            if(turn == "player"){
+              turn = "enemy";
+              reinforcements = Math.floor((enemy.length)/3);
+            }
+            else{
+              turn = "player";
+              reinforcements = Math.floor((player.length)/3);
+            }
+            if(phaseCounter == 1){
+          phase = "reinforce";
+        }
+        if(phaseCounter == 2){
+          phase = "attack";
+        }
+        if(phaseCounter == 3){
+          phase = "move";
+        }    
+        
+        }}}}
+
+      if(phase == "attack" && selected != null && gameState == "play"){
+         var s = selected.neighbouringProvinces;
+         for(var i = 0; i < s.length; i++){
+           if(s[i].allegiance == "enemy" && s[i].checkMousePosition() && selected.troops > 1){
+             attack(selected, s[i]);
+           }
+        }
+    }
+    
+        
+          
+        
+      }
+      //next phase button
+      if(mouseX > 587 && mouseX < 703 && mouseY > 584 && mouseY < 634 && gameState == "play" && (turn == "player")){
+        selected = null;
+        phaseCounter++;
+        if(phaseCounter > 3){
+          phaseCounter = 1;
+          if(turn == "player"){
+            turn = "enemy";
+            reinforcements = Math.floor((enemy.length)/3);
+          }
+          else{
+            turn = "player";
+            reinforcements = Math.floor((player.length)/3);
+          }
+        }
+        if(phaseCounter == 1){
+          phase = "reinforce";
+        }
+        if(phaseCounter == 2){
+          phase = "attack";
+        }
+        if(phaseCounter == 3){
+          phase = "move";
+        }
+      }
+
+     
+
+
+      //checking which province is clicked on
+      if(turn == "player" && gameState == "play"){
+
+        if(phase == "reinforce"){
+          for(i = 0; i < allProvinces.length; i ++) {
+
+            if ((allProvinces[i]).checkMousePosition() && (allProvinces[i]).allegiance == "player") {
+
+              reinforce(allProvinces[i]);
+            
+            }
+
+          }
+          if((reinforcements == 0 || fullTroops(player))&& phase == "reinforce"){
+            phase = "attack";
+            phaseCounter = 2;
+            selected = null;
+          };       
+        }
+
+        if(phase != ("reinforce")){
+      
+          reinforcements = 0;
+          
+          for(i = 0; i < allProvinces.length; i ++) {
+
+            console.log(i)
+
+            if ((allProvinces[i]).checkMousePosition() && (allProvinces[i]).allegiance == "player") {
+
+              selected = (allProvinces[i]);
+
+              console.log(allProvinces[i])
+            
+            }
+
+          }
+        
+        }
+      }
+      }
+    
+
+//game over message
+textSize(30);
+if(gameState == "lose"){
+  //background
+  background(255,0,0);
+  //france
+  noStroke();
+  fill(255,0,0);
+  image(img, 0, 0);
+  for(var i = 0; i < 40; i++){
+    provinces(i,"enemy");
+  }
+  //message
+  display("      you lose...",440,292,400,50);
+}
+if(gameState == "win"){
+  //background
+  background(0,255,0);
+  //france
+  noStroke();
+  fill(0,255,0,60);
+  image(img, 0, 0);
+  for(var i = 0; i < 40; i++){
+    provinces(i,"player");
+  }
+  //message
+  display("      you win!!!",440,292,400,50);
+}
+
+
+    if(gameState == ("play" || "win" || "lose")){
+    //the background/ocean
+    background(108,189,223);
+
+    image(img, 0, 0);
+
+    //animating the the provinces
+    noStroke();
+    for(var i = 0; i < player.length; i++){
+      provinces(player[i],"player");
+    }
+    for(var i = 0; i < enemy.length; i++){
+      provinces(enemy[i],"enemy");
+    }
+    
+    //displaying information
+    
+    //displaying the current phase
+    display(turn + " " + phase, 70,584,420,50);
+
+    //displaying the next phase button
+    button("next", 588,584,115,50);
+
+    //number of available troops
+    display("reinforcements: " + reinforcements,800,584,400,50);
+
+    //battle summary
+    summarizeBattle();
+
+    //displaying the selected province
+   if(turn == "player" && gameState == "play"){
+     if(selected != null){
+       fill(0,255,0,60);
+       selected.shape(selected.troops);
+       if(phase == "attack"){
+         var s = selected.neighbouringProvinces;
+         for(var i = 0; i < s.length; i++){
+           if(s[i].allegiance == "enemy"){
+             fill(255,255,0,60);
+             s[i].shape(s[i].troops);
+           }
+         }
+       }
+  
+       if(phase == "move" && gameState == "play"){
+         var s = selected.neighbouringProvinces;
+         for(var i = 0; i < s.length; i++){
+           if(s[i].allegiance == "player"){
+             fill(0,0,255,60);
+             s[i].shape(s[i].troops);
+           }
+         }
+       }
+   }
+}
+
+    
+    
+}
+
+// the user’s mouse
+   if(gameState != ("lose"||"win"))
+    noCursor();
+    stroke(255);
+    strokeWeight(1.5);
+    fill(0);
+    triangle(mouseX, mouseY, mouseX, mouseY+15, mouseX+10,   mouseY+15); 
+}};
+   
+
+}    
+   
+
+    
+    
+ 
+   // Get the canvas that Processing-js will use
+   var canvas = document.getElementById("mycanvas");
+   // Pass the function sketchProc (defined in myCode.js) to Processing'F constructor.
+   var processingInstance = new Processing(canvas, sketchProc);
+</script>
+<script>
+var myVar;
+
+function myFunction() {
+  myVar = setTimeout(showPage, 0);
+}
+
+function showPage() {
+  document.getElementById("loader").style.display = "none";
+  document.getElementById("mycanvas").style.display = "block";
+}
+</script>
+ 
+</html>
+
+
+
