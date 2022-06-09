@@ -1818,7 +1818,7 @@ Arabia.neighbouringProvinces = [MiddleEast, Iran, Pakistan, Egypt, HornOfAfrica]
 
 MiddleEast.neighbouringProvinces = [AsiaMinor, Egypt, Arabia, Iran];
 
-AsiaMinor.neighbouringProvinces = [EasternEurope, SouthernEurope, Russia, CentralAsia, Russia, MiddleEast, Iran];
+AsiaMinor.neighbouringProvinces = [EasternEurope, SouthernEurope, Russia, CentralAsia, MiddleEast, Iran];
 
 Egypt.neighbouringProvinces = [HornOfAfrica, Arabia, MiddleEast, NorthAfrica, Chad, AsiaMinor, Congo, Nigeria];
 
@@ -1844,9 +1844,9 @@ EasternEurope.neighbouringProvinces = [Russia, NorthernEurope, CentralEurope, So
 
 CentralEurope.neighbouringProvinces = [EasternEurope, NorthernEurope, NorthWesternEurope, SouthernEurope, WesternEurope];
 
-SouthernEurope.neighbouringProvinces = [NorthAfrica, WestAfrica, AsiaMinor, EasternEurope, CentralEurope, EasternEurope];
+SouthernEurope.neighbouringProvinces = [NorthAfrica, AsiaMinor, CentralEurope, EasternEurope];
 
-WesternEurope.neighbouringProvinces = [northWesternEurope, NorthAfrica, CentralEurope, SouthernEurope, NorthWesternEurope]
+WesternEurope.neighbouringProvinces = [NorthAfrica, CentralEurope, SouthernEurope, NorthWesternEurope]
 
 NorthWesternEurope.neighbouringProvinces = [NorthernEurope, CentralEurope, WesternEurope];
 
@@ -2143,7 +2143,6 @@ if(gameState == "win"){
   background(0,255,0);
   noStroke();
   fill(0,255,0,60);
-  image(img, 0, 0);
   for(var i = 0; i < 40; i++){
     provinces(i,"player");
   }
@@ -2154,9 +2153,8 @@ if(gameState == "win"){
 
     if(gameState == ("play" || "win" || "lose")){
     //the background/ocean
-    background(108,189,223);
+    background(181, 221, 252);
 
-    image(img, 0, 0);
 
     //animating the the provinces
     noStroke();
@@ -2247,6 +2245,7 @@ function showPage() {
 </script>
  
 </html>
+
 
 
 
