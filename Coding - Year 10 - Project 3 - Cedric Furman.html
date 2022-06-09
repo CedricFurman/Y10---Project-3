@@ -1790,7 +1790,7 @@ var allProvinces = [Australia, Indonesia, Phillipines, Japan, Korea, China, Sout
 // the neighbouring provinces of each province
 Australia.neighbouringProvinces = [Indonesia];
 
-Indonesia.neighbouringProvinces = [Phillipines, SouthEastAsia];
+Indonesia.neighbouringProvinces = [Phillipines, SouthEastAsia, Australia];
 
 Phillipines.neighbouringProvinces = [Indonesia, SouthEastAsia, China];
 
@@ -1820,7 +1820,7 @@ MiddleEast.neighbouringProvinces = [AsiaMinor, Egypt, Arabia, Iran];
 
 AsiaMinor.neighbouringProvinces = [EasternEurope, SouthernEurope, Russia, CentralAsia, Russia, MiddleEast, Iran];
 
-Egypt.neighbouringProvinces = [HornOfAfrica, Arabia, MiddleEast, NorthAfrica, Chad];
+Egypt.neighbouringProvinces = [HornOfAfrica, Arabia, MiddleEast, NorthAfrica, Chad, AsiaMinor, Congo, Nigeria];
 
 HornOfAfrica.neighbouringProvinces = [Egypt, Arabia, SouthEastAfrica, Congo];
 
@@ -1846,7 +1846,7 @@ CentralEurope.neighbouringProvinces = [EasternEurope, NorthernEurope, NorthWeste
 
 SouthernEurope.neighbouringProvinces = [NorthAfrica, WestAfrica, AsiaMinor, EasternEurope, CentralEurope, EasternEurope];
 
-WesternEurope.neighbouringProvinces = [northWesternEurope, NorthAfrica, CentralEurope, SouthernEurope]
+WesternEurope.neighbouringProvinces = [northWesternEurope, NorthAfrica, CentralEurope, SouthernEurope, NorthWesternEurope]
 
 NorthWesternEurope.neighbouringProvinces = [NorthernEurope, CentralEurope, WesternEurope];
 
@@ -2129,7 +2129,6 @@ textSize(30);
 if(gameState == "lose"){
   //background
   background(255,0,0);
-  //france
   noStroke();
   fill(255,0,0);
   image(img, 0, 0);
@@ -2142,7 +2141,6 @@ if(gameState == "lose"){
 if(gameState == "win"){
   //background
   background(0,255,0);
-  //france
   noStroke();
   fill(0,255,0,60);
   image(img, 0, 0);
